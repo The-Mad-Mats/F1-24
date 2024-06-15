@@ -1,0 +1,4 @@
+﻿MadMats,Blue,True
+Icehawk,Orange, True
+BOTTAS,Yellow,False
+ALBON,Green,False
