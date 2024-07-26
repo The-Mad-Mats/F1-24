@@ -17,6 +17,8 @@ namespace F1
         private string _fuelMix;
         private string _ersMode;
         private int _cornerCutValue;
+        private double _gapToLeader;
+        private double _gapToAhead;
 
         #endregion
         #region Public variables
@@ -31,6 +33,8 @@ namespace F1
         public double _currentLap;
         private string _tyre;
         public string _pits;
+        public double _gapToLeaderMinutes;
+        public double _gapToAheadMinutes;
         #endregion
         public string Name { get; set; }
         //public string ViewName
@@ -43,23 +47,23 @@ namespace F1
         //}
 
 
-        public int PassPlus { get; set; }
-        public int PassMinus { get; set; }
-        public int CarPosition
-        {
-            get { return _carPosition; }
-            set
-            {
-                if (_carPosition != 0)
-                {
-                    if (_carPosition > value)
-                        PassPlus++;
-                    if (_carPosition < value)
-                        PassMinus++;
-                }
-                _carPosition = value;
-            }
-        }
+        //public int PassPlus { get; set; }
+        //public int PassMinus { get; set; }
+        public int CarPosition { get; set; }
+        //{
+        //    get { return _carPosition; }
+        //    set
+        //    {
+        //        if (_carPosition != 0)
+        //        {
+        //            if (_carPosition > value)
+        //                PassPlus++;
+        //            if (_carPosition < value)
+        //                PassMinus++;
+        //        }
+        //        _carPosition = value;
+        //    }
+        //}
 
         public string Color
         {
@@ -100,33 +104,57 @@ namespace F1
                 }
             }
         }
-        public string GapInMeters
+        public string GapToLeader
         {
             get
             {
-                if (Session == "1" || Session == "2" || Session == "3" || Session == "4" || Session == "5" || Session == "6" || Session == "7" || Session == "8" || Session == "9")
-                {
-                    return string.Empty;
-                }
-                else
-                {
-                    if (ViewModel.Leader.LapNum == LapNum)
-                    {
-                        return (ViewModel.Leader.LapDistance - LapDistance).ToString();
-                    }
-                    else if (ViewModel.Leader.LapNum == LapNum + 1)
-                    {
-                        return (ViewModel.Leader.LapDistance + (ViewModel.TrackLength - LapDistance)).ToString();
-                    }
-                    else
-                    {
-                        var laps = ViewModel.Leader.LapNum - LapNum - 1;
-                        var length = ViewModel.TrackLength * laps;
-                        return (length + ViewModel.Leader.LapDistance + (ViewModel.TrackLength - LapDistance)).ToString();
-                    }
-                }
+                TimeSpan span = TimeSpan.FromMilliseconds(_gapToLeaderMinutes*60000+_gapToLeader);
+                return span.ToString(@"mm\:ss\:fff");
+            }
+            set
+            {
+                _gapToLeader = Convert.ToDouble(value);
             }
         }
+        public string GapToAhead
+        {
+            get
+            {
+                TimeSpan span = TimeSpan.FromMilliseconds(_gapToAheadMinutes * 60000 + _gapToAhead);
+                return span.ToString(@"mm\:ss\:fff");
+            }
+            set
+            {
+                _gapToAhead = Convert.ToDouble(value);
+            }
+        }
+        //public string GapInMeters
+        //{
+        //    get
+        //    {
+        //        if (Session == "1" || Session == "2" || Session == "3" || Session == "4" || Session == "5" || Session == "6" || Session == "7" || Session == "8" || Session == "9")
+        //        {
+        //            return string.Empty;
+        //        }
+        //        else
+        //        {
+        //            if (ViewModel.Leader.LapNum == LapNum)
+        //            {
+        //                return (ViewModel.Leader.LapDistance - LapDistance).ToString();
+        //            }
+        //            else if (ViewModel.Leader.LapNum == LapNum + 1)
+        //            {
+        //                return (ViewModel.Leader.LapDistance + (ViewModel.TrackLength - LapDistance)).ToString();
+        //            }
+        //            else
+        //            {
+        //                var laps = ViewModel.Leader.LapNum - LapNum - 1;
+        //                var length = ViewModel.TrackLength * laps;
+        //                return (length + ViewModel.Leader.LapDistance + (ViewModel.TrackLength - LapDistance)).ToString();
+        //            }
+        //        }
+        //    }
+        //}
         public string Driver
         {
             get { return ViewModel.Drivers.FirstOrDefault(x => x.Key == DriverId).Value; }
@@ -149,6 +177,13 @@ namespace F1
             }
         }
 
+        public bool FastestLap
+        {
+            get
+            {
+                return BestLap == ViewModel.FastestLap;
+            }
+        }
         public string BestLap
         {
             get
@@ -737,28 +772,57 @@ namespace F1
         {
             get
             {
-                if (LeftFrontInnerTemp > 110 ||
-                    RightFrontInnerTemp > 110 ||
-                    LeftRearInnerTemp > 110 ||
-                    RightRearInnerTemp > 110)
+                if (Tyre == "16" || Tyre == "17" || Tyre == "18")
                 {
-                    return "Red";
+                    if (LeftFrontInnerTemp > 117 ||
+                        RightFrontInnerTemp > 117 ||
+                        LeftRearInnerTemp > 117 ||
+                        RightRearInnerTemp > 117)
+                    {
+                        return "Red";
+                    }
+                    if (LeftFrontInnerTemp > 102 && LeftFrontInnerTemp <= 117 ||
+                        RightFrontInnerTemp > 102 && RightFrontInnerTemp <= 117 ||
+                        LeftRearInnerTemp > 102 && LeftRearInnerTemp <= 117 ||
+                        RightRearInnerTemp > 102 && RightRearInnerTemp <= 117)
+                    {
+                        return "Yellow";
+                    }
+                    if (LeftFrontInnerTemp > 60 && LeftFrontInnerTemp <= 102 ||
+                        RightFrontInnerTemp > 60 && RightFrontInnerTemp <= 102 ||
+                        LeftRearInnerTemp > 60 && LeftRearInnerTemp <= 102 ||
+                        RightRearInnerTemp > 60 && RightRearInnerTemp <= 102)
+                    {
+                        return "Green";
+                    }
+                    return "Blue";
                 }
-                if (LeftFrontInnerTemp > 100 && LeftFrontInnerTemp <= 110 ||
-                    RightFrontInnerTemp > 100 && RightFrontInnerTemp <= 110 ||
-                    LeftRearInnerTemp > 100 && LeftRearInnerTemp <= 110 ||
-                    RightRearInnerTemp > 100 && RightRearInnerTemp <= 110)
-                { 
-                    return "Yellow"; 
+                if (Tyre == "7" || Tyre == "8")
+                {
+                    if (LeftFrontInnerTemp > 107 ||
+                        RightFrontInnerTemp > 107 ||
+                        LeftRearInnerTemp > 107 ||
+                        RightRearInnerTemp > 107)
+                    {
+                        return "Red";
+                    }
+                    if (LeftFrontInnerTemp > 92 && LeftFrontInnerTemp <= 107 ||
+                        RightFrontInnerTemp > 92 && RightFrontInnerTemp <= 107 ||
+                        LeftRearInnerTemp > 92 && LeftRearInnerTemp <= 107 ||
+                        RightRearInnerTemp > 92 && RightRearInnerTemp <= 107)
+                    {
+                        return "Yellow";
+                    }
+                    if (LeftFrontInnerTemp > 60 && LeftFrontInnerTemp <= 92 ||
+                        RightFrontInnerTemp > 60 && RightFrontInnerTemp <= 92 ||
+                        LeftRearInnerTemp > 60 && LeftRearInnerTemp <= 92 ||
+                        RightRearInnerTemp > 60 && RightRearInnerTemp <= 92)
+                    {
+                        return "Green";
+                    }
+                    return "Blue";
                 }
-                if (LeftFrontInnerTemp > 90 && LeftFrontInnerTemp <= 100 ||
-                    RightFrontInnerTemp > 90 && RightFrontInnerTemp <= 100 ||
-                    LeftRearInnerTemp > 90 && LeftRearInnerTemp <= 100 ||
-                    RightRearInnerTemp > 90 && RightRearInnerTemp <= 100)
-                { 
-                    return "Green"; 
-                }
-                return "Blue";
+                return "Green";
             }
         }
         public int LeftFrontInnerTemp { get; set; }

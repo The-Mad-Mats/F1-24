@@ -56,6 +56,7 @@ namespace F1
         public static ObservableCollection<HighLight> _HighLights = new ObservableCollection<HighLight>();
         public ObservableCollection<string> _Colors = new ObservableCollection<string> { "Blue", "Yellow", "Orange", "Green" };
         public static User Leader;
+        public static string FastestLap;
         public static float TrackLength;
         public bool Run = true;
 
@@ -465,7 +466,16 @@ namespace F1
                 NotifyPropertyChanged("Weather");
             }
         }
-
+        private string _aiDifficulty;
+        public string AIDifficulty
+        { 
+            get { return $"AI: {_aiDifficulty}"; }
+            set
+            {
+                _aiDifficulty = value;
+                NotifyPropertyChanged("AIDifficulty");
+            }
+        }
         public string AirTemp { get; set; }
         public string TrackTemp { get; set; }
 
@@ -670,6 +680,7 @@ namespace F1
                                 AirTemp = sessionData.m_airTemperature.ToString();
                                 Weather = sessionData.m_weather.ToString();
                                 TrackLength = sessionData.m_trackLength;
+                                AIDifficulty = sessionData.m_aiDifficulty.ToString();
                                 if (_session != CurrentSession)
                                 {
                                     CurrentSession = _session;
@@ -710,6 +721,10 @@ namespace F1
                                         userList[index].LapDistance = Convert.ToInt32(ld.m_lapDistance);
                                         userList[index].Warnings = ld.m_totalWarnings.ToString();
                                         userList[index].CornerCutValue = ld.m_cornerCuttingWarnings;
+                                        userList[index].GapToLeader = ld.m_deltaToRaceLeaderInMS.ToString();
+                                        userList[index]._gapToLeaderMinutes = ld.m_deltaToRaceLeaderMinutesPart;
+                                        userList[index].GapToAhead = ld.m_deltaToCarInFrontInMS.ToString();
+                                        userList[index]._gapToAheadMinutes = ld.m_deltaToCarInFrontMinutesPart;
                                         if (ld.m_currentLapNum == 1)
                                         {
                                             //Only on first lap, check if Start position is saved
@@ -805,8 +820,8 @@ namespace F1
                                             Team = participant.m_teamId.ToString(),
                                             Country = participant.m_nationality,
                                             CarPosition = 0,
-                                            PassMinus = 0,
-                                            PassPlus = 0,
+                                            //PassMinus = 0,
+                                            //PassPlus = 0,
                                             BestLap = "0"
                                         };
                                         userList.Add(user);
@@ -857,10 +872,10 @@ namespace F1
                                         userList[index].EngineTemp = td.m_engineTemperature.ToString();
                                         if (index == PlayerCarIndex)
                                         {
-                                            TyreTempLF = td.m_tyresInnerTemperature[0].ToString();
-                                            TyreTempRF = td.m_tyresInnerTemperature[1].ToString();
-                                            TyreTempLR = td.m_tyresInnerTemperature[2].ToString();
-                                            TyreTempRR = td.m_tyresInnerTemperature[3].ToString();
+                                            TyreTempLF = td.m_tyresInnerTemperature[2].ToString();
+                                            TyreTempRF = td.m_tyresInnerTemperature[3].ToString();
+                                            TyreTempLR = td.m_tyresInnerTemperature[0].ToString();
+                                            TyreTempRR = td.m_tyresInnerTemperature[1].ToString();
 
                                         }
 
@@ -1011,7 +1026,7 @@ namespace F1
                         List<User> sortedList = userList.OrderBy(y => y.m_position).ToList();
                         sortedList = sortedList.OrderBy(x => x.m_position == 0).ToList();
                         Users = new ObservableCollection<User>(sortedList);
-                        if(sessionCompleted == false)
+                        if (sessionCompleted == false)
                         {
                             WriteFinalClassification(sortedList);
                             sessionCompleted = true;
@@ -1025,7 +1040,10 @@ namespace F1
                         Users = new ObservableCollection<User>(sortedList);
                         ShowDriversGraphs = new ObservableCollection<DriverGraph>(showDrivers);
                         if (Users.Count > 0)
+                        { 
                             Leader = Users[0];
+                            FastestLap = Users.OrderBy(x => x.BestLap).FirstOrDefault().BestLap;
+                        }
                     }
                 }
             }
