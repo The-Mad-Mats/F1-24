@@ -1040,9 +1040,21 @@ namespace F1
                         Users = new ObservableCollection<User>(sortedList);
                         ShowDriversGraphs = new ObservableCollection<DriverGraph>(showDrivers);
                         if (Users.Count > 0)
-                        { 
+                        {
                             Leader = Users[0];
-                            FastestLap = Users.OrderBy(x => x.BestLap).FirstOrDefault().BestLap;
+                            FastestLap = Users.Where(y => y.BestLap != "00:00:000").OrderBy(x => x.BestLap).FirstOrDefault()?.BestLap ?? "00:00:000";
+                            if (_session == "1" || _session == "2" || _session == "3" || _session == "4" || _session == "5" || _session == "6" || _session == "7" || _session == "8" || _session == "9" || _session == "12" || _session == "13" || _session == "14")
+                            {
+                                for(int index = 0; index < sortedList.Count; index++)
+                                {
+                                    if(index == 0)
+                                        sortedList[index]._gapToAhead = 0;
+                                    else
+                                    {
+                                        sortedList[index]._gapToAhead = sortedList[index]._bestLap - sortedList[index - 1]._bestLap;
+                                    }
+                                }
+                            }
                         }
                     }
                 }

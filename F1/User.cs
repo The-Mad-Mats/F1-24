@@ -18,7 +18,7 @@ namespace F1
         private string _ersMode;
         private int _cornerCutValue;
         private double _gapToLeader;
-        private double _gapToAhead;
+        public double _gapToAhead;
 
         #endregion
         #region Public variables
@@ -108,8 +108,18 @@ namespace F1
         {
             get
             {
-                TimeSpan span = TimeSpan.FromMilliseconds(_gapToLeaderMinutes*60000+_gapToLeader);
-                return span.ToString(@"mm\:ss\:fff");
+                if (ViewModel.Leader == null || Session == null || Laps.Count == 0)
+                    return "";
+                if (Session == "1" || Session == "2" || Session == "3" || Session == "4" || Session == "5" || Session == "6" || Session == "7" || Session == "8" || Session == "9" || Session == "12")
+                {
+                    TimeSpan span = TimeSpan.FromMilliseconds(_bestLap - ViewModel.Leader._bestLap);
+                    return span.ToString(@"mm\:ss\:fff");
+                }
+                else
+                {
+                    TimeSpan span = TimeSpan.FromMilliseconds(_gapToLeaderMinutes * 60000 + _gapToLeader);
+                    return span.ToString(@"mm\:ss\:fff");
+                }
             }
             set
             {
@@ -120,8 +130,18 @@ namespace F1
         {
             get
             {
-                TimeSpan span = TimeSpan.FromMilliseconds(_gapToAheadMinutes * 60000 + _gapToAhead);
-                return span.ToString(@"mm\:ss\:fff");
+                if (ViewModel.Leader == null || Session == null || Laps.Count == 0)
+                    return "";
+                if (Session == "1" || Session == "2" || Session == "3" || Session == "4" || Session == "5" || Session == "6" || Session == "7" || Session == "8" || Session == "9" || Session == "12")
+                {
+                    TimeSpan span = TimeSpan.FromMilliseconds(_gapToAhead);
+                    return span.ToString(@"mm\:ss\:fff");
+                }
+                else
+                {
+                    TimeSpan span = TimeSpan.FromMilliseconds(_gapToAheadMinutes * 60000 + _gapToAhead);
+                    return span.ToString(@"mm\:ss\:fff");
+                }
             }
             set
             {
@@ -181,6 +201,9 @@ namespace F1
         {
             get
             {
+                if (BestLap == "00:00:000")
+                    return false;
+
                 return BestLap == ViewModel.FastestLap;
             }
         }
