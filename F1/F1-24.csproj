@@ -124,6 +124,7 @@
     </Compile>
     <Compile Include="SelectDriversViewModel.cs" />
     <Compile Include="Standings.cs" />
+    <Compile Include="TyreAlertLimit.cs" />
     <Compile Include="UDPConverter.cs" />
     <Compile Include="UDPPackage.cs" />
     <Compile Include="ValueConverter.cs" />

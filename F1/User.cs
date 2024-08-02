@@ -19,6 +19,14 @@ namespace F1
         private int _cornerCutValue;
         private double _gapToLeader;
         public double _gapToAhead;
+        private static Dictionary<string, TyreAlertLimit> _tyreAlerts = new Dictionary<string, TyreAlertLimit>
+            {
+                { "16", new TyreAlertLimit() { Blue = 0, Green = 70, Yellow = 110, Red = 130 } },
+                { "17", new TyreAlertLimit() { Blue = 0, Green = 75, Yellow = 115, Red = 135 } },
+                { "18", new TyreAlertLimit() { Blue = 0, Green = 80, Yellow = 125, Red = 140 } },
+                { "7", new TyreAlertLimit() { Blue = 0, Green = 60, Yellow = 92, Red = 107 } },
+                { "8", new TyreAlertLimit() { Blue = 0, Green = 60, Yellow = 92, Red = 107 } }
+            }; 
 
         #endregion
         #region Public variables
@@ -795,57 +803,30 @@ namespace F1
         {
             get
             {
-                if (Tyre == "16" || Tyre == "17" || Tyre == "18")
-                {
-                    if (LeftFrontInnerTemp > 117 ||
-                        RightFrontInnerTemp > 117 ||
-                        LeftRearInnerTemp > 117 ||
-                        RightRearInnerTemp > 117)
+                if (Tyre == null) return "Blue";
+                var limits = _tyreAlerts[Tyre];
+                    if (LeftFrontInnerTemp > limits.Red ||
+                        RightFrontInnerTemp > limits.Red ||
+                        LeftRearInnerTemp > limits.Red ||
+                        RightRearInnerTemp > limits.Red)
                     {
                         return "Red";
                     }
-                    if (LeftFrontInnerTemp > 102 && LeftFrontInnerTemp <= 117 ||
-                        RightFrontInnerTemp > 102 && RightFrontInnerTemp <= 117 ||
-                        LeftRearInnerTemp > 102 && LeftRearInnerTemp <= 117 ||
-                        RightRearInnerTemp > 102 && RightRearInnerTemp <= 117)
+                    if (LeftFrontInnerTemp > limits.Yellow  ||
+                        RightFrontInnerTemp > limits.Yellow ||
+                        LeftRearInnerTemp > limits.Yellow ||
+                        RightRearInnerTemp > limits.Yellow)
                     {
                         return "Yellow";
                     }
-                    if (LeftFrontInnerTemp > 60 && LeftFrontInnerTemp <= 102 ||
-                        RightFrontInnerTemp > 60 && RightFrontInnerTemp <= 102 ||
-                        LeftRearInnerTemp > 60 && LeftRearInnerTemp <= 102 ||
-                        RightRearInnerTemp > 60 && RightRearInnerTemp <= 102)
+                    if (LeftFrontInnerTemp > limits.Green ||
+                        RightFrontInnerTemp > limits.Green ||
+                        LeftRearInnerTemp > limits.Green ||
+                        RightRearInnerTemp > limits.Green)
                     {
                         return "Green";
                     }
                     return "Blue";
-                }
-                if (Tyre == "7" || Tyre == "8")
-                {
-                    if (LeftFrontInnerTemp > 107 ||
-                        RightFrontInnerTemp > 107 ||
-                        LeftRearInnerTemp > 107 ||
-                        RightRearInnerTemp > 107)
-                    {
-                        return "Red";
-                    }
-                    if (LeftFrontInnerTemp > 92 && LeftFrontInnerTemp <= 107 ||
-                        RightFrontInnerTemp > 92 && RightFrontInnerTemp <= 107 ||
-                        LeftRearInnerTemp > 92 && LeftRearInnerTemp <= 107 ||
-                        RightRearInnerTemp > 92 && RightRearInnerTemp <= 107)
-                    {
-                        return "Yellow";
-                    }
-                    if (LeftFrontInnerTemp > 60 && LeftFrontInnerTemp <= 92 ||
-                        RightFrontInnerTemp > 60 && RightFrontInnerTemp <= 92 ||
-                        LeftRearInnerTemp > 60 && LeftRearInnerTemp <= 92 ||
-                        RightRearInnerTemp > 60 && RightRearInnerTemp <= 92)
-                    {
-                        return "Green";
-                    }
-                    return "Blue";
-                }
-                return "Green";
             }
         }
         public int LeftFrontInnerTemp { get; set; }
