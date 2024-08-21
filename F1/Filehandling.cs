@@ -12,13 +12,33 @@ namespace F1
     {
         private void SaveSettings()
         {
+            var highLight = HighLightPerSeasons.FirstOrDefault(x => x.SeasonName == SeasonName);
+            if(highLight != null)
+            {
+                highLight.Drivers.Clear();
+                highLight.Drivers.AddRange(HighLights);
+            }
+            else
+            {
+                var hlps = new HighLightPerSeason
+                {
+                    SeasonName = SeasonName,
+                    Drivers = new List<HighLight>()
+                };
+                hlps.Drivers.AddRange(HighLights);
+                HighLightPerSeasons.Add(hlps);
+            }
             var filename = "Names\\HighlightedDrivers.txt";
             using (StreamWriter writer = new StreamWriter(filename))
             {
-                writer.WriteLine(HighLights[0].Name + "," + HighLights[0].Color + "," + HighLights[0].Human);
-                writer.WriteLine(HighLights[1].Name + "," + HighLights[1].Color + "," + HighLights[1].Human);
-                writer.WriteLine(HighLights[2].Name + "," + HighLights[2].Color + "," + HighLights[2].Human);
-                writer.WriteLine(HighLights[3].Name + "," + HighLights[3].Color + "," + HighLights[3].Human);
+                foreach(var hl in HighLightPerSeasons)
+                {
+                    writer.WriteLine(hl.SeasonName);
+                    foreach(var driver in  hl.Drivers)
+                    {
+                        writer.WriteLine(driver.Name + "," + driver.Color + "," + driver.Human);
+                    }
+                }
             }
 
             filename = "Names\\Settings.txt";
@@ -153,7 +173,7 @@ namespace F1
                     }
                 }
                 //Check best laps
-                var humanList = sortedList.Where(x => HighLights.Where(y => y.Human).Select(z => z.Name).Contains(x.Name));
+                var humanList = sortedList.Where(x => HighLights.Where(y => y.Human).Select(z => z.Name).Contains(x.Name) && x.m_bestLapTime != 0);
                 var bestHuman = humanList.FirstOrDefault(y => y.m_bestLapTime == humanList.Min(x => x.m_bestLapTime));
                 var bestLapCollection = ReadBestLaps();
                 var bestLap = bestLapCollection.FirstOrDefault(x => x.Track == Track);
@@ -249,32 +269,8 @@ namespace F1
                 }
             }
 
-            info = new FileInfo("Names\\HighlightedDrivers.txt");
-            using (StreamReader reader = info.OpenText())
-            {
-                HighLights.Clear();
-                while (true)
-                {
-                    string line = reader.ReadLine();
-                    if (line == null)
-                        break;
-                    var lines = line.Split(',');
-                    if (lines.Length > 3)
-                    {
-                        HighLights.Add(new HighLight { Name = lines[0], Color = lines[4].ToString(), Human = false });
-                    }
-                    else if (lines.Length == 2)
-                    {
-                        HighLights.Add(new HighLight { Name = lines[0], Color = lines[1].ToString(), Human = false });
-                    }
-                    else
-                    {
-                        HighLights.Add(new HighLight { Name = lines[0], Color = lines[1].ToString(), Human = Convert.ToBoolean(lines[2]) });
-                    }
-                }
-            }
-
             info = new FileInfo("Names\\Settings.txt");
+            string tempSeasonName = string.Empty;
             using (StreamReader reader = info.OpenText())
             {
                 while (true)
@@ -287,7 +283,9 @@ namespace F1
                     SwitchingEnabled = Convert.ToBoolean(lines[1]);
                     SwitchInterval = Convert.ToInt32(lines[2]);
                     if (lines.Count() > 3)
-                        SeasonName = lines[3];
+                    {
+                        tempSeasonName = lines[3];
+                    }
                 }
             }
             Seasons = new ObservableCollection<string>();
@@ -297,12 +295,68 @@ namespace F1
                 {
                     Seasons.Add(dir);
                 }
-                SelectedSeason = SeasonName;
+                SelectedSeason = tempSeasonName;
             }
             ReadRaces();
             ReadQualis();
+
+            info = new FileInfo("Names\\HighlightedDrivers.txt");
+            HighLightPerSeasons = new ObservableCollection<HighLightPerSeason>();
+            using (StreamReader reader = info.OpenText())
+            {
+                HighLights.Clear();
+                while (true)
+                {
+                    string line = reader.ReadLine();
+                    if (line == null)
+                        break;
+                    var lines = line.Split(',');
+                    if (lines.Length == 1)
+                    {
+                        var hl = new HighLightPerSeason();
+                        hl.SeasonName = lines[0];
+                        hl.Drivers = new List<HighLight>();
+                        line = reader.ReadLine();
+                        lines = line.Split(',');
+                        hl.Drivers.Add(new HighLight { Name = lines[0], Color = lines[1].ToString(), Human = Convert.ToBoolean(lines[2]) });
+                        line = reader.ReadLine();
+                        lines = line.Split(',');
+                        hl.Drivers.Add(new HighLight { Name = lines[0], Color = lines[1].ToString(), Human = Convert.ToBoolean(lines[2]) });
+                        line = reader.ReadLine();
+                        lines = line.Split(',');
+                        hl.Drivers.Add(new HighLight { Name = lines[0], Color = lines[1].ToString(), Human = Convert.ToBoolean(lines[2]) });
+                        line = reader.ReadLine();
+                        lines = line.Split(',');
+                        hl.Drivers.Add(new HighLight { Name = lines[0], Color = lines[1].ToString(), Human = Convert.ToBoolean(lines[2]) });
+                        HighLightPerSeasons.Add(hl);
+                    }
+                }
+                SeasonsInSettings = new ObservableCollection<string>();
+                foreach (var hl in HighLightPerSeasons)
+                {
+                    SeasonsInSettings.Add(hl.SeasonName);
+                    if (hl.SeasonName == tempSeasonName)
+                    {
+                        foreach (var driver in hl.Drivers)
+                            HighLights.Add(driver);
+                    }
+                }
+                SeasonName = tempSeasonName;
+            }
         }
 
+        public void ReloadHiglights()
+        {
+            foreach (var hl in HighLightPerSeasons)
+            {
+                if (hl.SeasonName == SeasonName)
+                {
+                    HighLights.Clear();
+                    foreach (var driver in hl.Drivers)
+                        HighLights.Add(driver);
+                }
+            }
+        }
         private void ReadRaces()
         {
             Races = new ObservableCollection<string>();

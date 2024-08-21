@@ -32,7 +32,7 @@ namespace F1
         #region Public variables
         public bool StartPosSet;
         public int DriverId;
-        int _carPosition = 0;
+        //int _carPosition = 0;
         public string Sector;
         public double LastLap;
         public string Session;

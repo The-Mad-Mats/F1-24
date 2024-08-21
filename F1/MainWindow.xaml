@@ -228,15 +228,17 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Path=Track,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10,10,10,10" FontSize="24" Grid.Row="0" Grid.ColumnSpan="1" />
-                <TextBlock Text="{Binding Path=Session,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="2"/>
-                <TextBlock Text="{Binding Path=AIDifficulty,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="3"/>
-                <TextBlock Text="{Binding Path=Weather,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="4"/>
-                <TextBlock Text="{Binding Path=TimeLeft,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Right"/>
+                <TextBlock Text="{Binding Path=Track,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="0" />
+                <TextBlock Text="{Binding Path=Session,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="1"/>
+                <TextBlock Text="{Binding Path=Weather,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="2"/>
+                <TextBlock Text="{Binding Path=TimeLeft,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="3" />
+                <TextBlock Text="{Binding Path=AIDifficulty,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="4"/>
+                <TextBlock Text="{Binding Path=SeasonName,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5,10,10,10" FontSize="24" Grid.Row="0" Grid.Column="5"/>
                 <!--<Button Content="Start" Command="{Binding StartCommand}" Margin="10,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0"/>-->
                 <!--<Button Content="Stop" Command="{Binding StopCommand}" Margin="10,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="0"/>-->
-                <DataGrid Name="UserGrid" ItemsSource="{Binding Users}" Grid.Row="1" Grid.ColumnSpan="5" Grid.Column="0" Width="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
+                <DataGrid Name="UserGrid" ItemsSource="{Binding Users}" Grid.Row="1" Grid.ColumnSpan="6" Grid.Column="0" Width="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Rank" Binding="{Binding CarPosition}" Width="Auto" FontSize="24" CellStyle="{StaticResource ActiveCellStyle}"/>
                         <DataGridTextColumn Header="Driver" Binding="{Binding Name}" Width="Auto" FontSize="24" CellStyle="{StaticResource ActiveCellStyle}"/>
@@ -514,7 +516,8 @@
                     <Label Content="Seconds between switching tabs" FontSize="18" Grid.Row="10" Grid.Column="0"/>
                     <TextBox Text="{Binding Path=SwitchInterval,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10,10,10,10" Grid.Row="10" Grid.Column="1"/>
                     <Label Content="Season name" FontSize="18" Grid.Row="11" Grid.Column="0"/>
-                    <TextBox Text="{Binding Path=SeasonName,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10,10,10,10" Grid.Row="11" Grid.Column="1" Width="100"/>
+                    <!--<TextBox Text="{Binding Path=SeasonName,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10,10,10,10" Grid.Row="11" Grid.Column="1" Width="100"/>-->
+                    <ComboBox IsEditable="True" ItemsSource="{Binding SeasonsInSettings}" SelectedItem="{Binding SeasonName, UpdateSourceTrigger=PropertyChanged}" Text="{Binding NewSeason, UpdateSourceTrigger=LostFocus}" Margin="10,10,10,10" Grid.Row="11" Grid.Column="1" Width="100"/>
                     <Button Content="Save" Command="{Binding SaveSettingsCommand}" Margin="10,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="12" Grid.Column="0"/>
                 </Grid>
             </Grid>

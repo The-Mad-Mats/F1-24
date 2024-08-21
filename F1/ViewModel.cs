@@ -63,7 +63,40 @@ namespace F1
         public int PortNumber { get; set; }
         public bool SwitchingEnabled { get; set; }
         public int SwitchInterval { get; set; }
-        public string SeasonName { get; set; }
+        public ObservableCollection<string> SeasonsInSettings { get; set; }
+        private string _seasonName;
+        public string SeasonName
+        {
+            get { return _seasonName; }
+            set
+            {
+                if (value != null)
+                {
+                    _seasonName = value;
+                    NotifyPropertyChanged("SeasonName");
+                    ReloadHiglights();
+                    NotifyPropertyChanged("Highlights");
+                }
+            }
+        }
+
+        public string NewSeason
+        {
+            set
+            {
+                if (SeasonsInSettings.Contains(value))
+                {
+                    return;
+                }
+                if (!string.IsNullOrEmpty(value))
+                {
+                    SeasonsInSettings.Add(value);
+                    SeasonName = value;
+                }
+            }
+        }
+        public static ObservableCollection<HighLightPerSeason> HighLightPerSeasons { get; set; }
+
         public ObservableCollection<string> Seasons { get; set; }
         private string _selectedSeason;
         public string SelectedSeason 
@@ -271,11 +304,13 @@ namespace F1
                 NotifyPropertyChanged("RearWingDamage");
             }
         }
-
         public static ObservableCollection<HighLight> HighLights
         {
             get { return _HighLights; }
-            set { _HighLights = value; }
+            set 
+            { 
+                _HighLights = value;
+            }
         }
         public ObservableCollection<string> Colors
         {

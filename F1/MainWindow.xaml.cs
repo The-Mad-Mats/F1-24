@@ -26,7 +26,7 @@ namespace F1
         public bool DoSwitchOrg = false;
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();           
             int sec = 5;
             var info = new FileInfo("Names\\Settings.txt");
             using (StreamReader reader = info.OpenText())
