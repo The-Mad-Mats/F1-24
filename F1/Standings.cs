@@ -36,4 +36,18 @@ namespace F1
         public List<Tuple<string, string, int>> PerRace { get; set; }
     }
 
+    public class Head2Heads
+    {
+        public List<Head2Head> Teams { get; set; }
+    }
+    public class Head2Head
+    {
+        public string Team { get; set; }
+        public string Driver1 { get; set; }
+        public string Driver2 { get; set; }
+        public int D1Q { get; set; }
+        public int D2Q { get; set; }
+        public int D1R { get; set; }
+        public int D2R { get; set; }
+    }
 }

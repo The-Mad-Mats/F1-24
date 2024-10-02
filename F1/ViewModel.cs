@@ -31,6 +31,8 @@ namespace F1
         private DataTable _raceResult;
         private string _selectedRace;
         private DataTable _bestLaps;
+        private DataTable _qualifyingH2H;
+        private DataTable _raceH2H;
         private SeriesCollection _seriesCollection;
         private ObservableCollection<DriverGraph> _showDriversGraph;
         private ICommand _startCommand;
@@ -438,6 +440,24 @@ namespace F1
                 NotifyPropertyChanged("BestLaps");
             }
         }
+        public DataTable QualifyingH2H
+        {
+            get { return _qualifyingH2H; }
+            set
+            {
+                _qualifyingH2H = value;
+                NotifyPropertyChanged("QualifyingH2H");
+            }
+        }
+        public DataTable RaceH2H
+        {
+            get { return _raceH2H; }
+            set
+            {
+                _raceH2H = value;
+                NotifyPropertyChanged("RaceH2H");
+            }
+        }
 
 
         private string _session;
@@ -653,6 +673,7 @@ namespace F1
             ReadStandings(false);
             ReadTeamStandings();
             ReadBestLaps();
+            ReadHeadToHead();
             Run = true;
             Task.Run(() => UDPReader());
 
@@ -1165,6 +1186,7 @@ namespace F1
             ReadTeamStandings();
             ReadBestLaps();
             ReadRaceResult();
+            ReadHeadToHead();
         }
         private void ReloadBestLap()
         {

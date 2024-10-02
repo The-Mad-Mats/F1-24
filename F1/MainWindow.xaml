@@ -414,6 +414,24 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
+                <TabItem Header="HeadToHead">
+                    <Grid DataContext="{Binding Source={StaticResource ViewModel}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Name="Qualifying" AutoGenerateColumns="True" ItemsSource="{Binding Path=QualifyingH2H}" Grid.Row="0" Grid.Column="0"/>
+                        <DataGrid Name="Race" AutoGenerateColumns="True" ItemsSource="{Binding Path=RaceH2H}" Grid.Row="0" Grid.Column="1"/>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2">
+                            <Button Content="Reload" Command="{Binding ReloadPosCommand}" Margin="10,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <ComboBox ItemsSource="{Binding Path=Seasons}" SelectedItem="{Binding Path=SelectedSeason}" Margin="10,10,10,10"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
 
             </TabControl>
         </TabItem>
