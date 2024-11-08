@@ -644,8 +644,9 @@ namespace F1
             TeamChamionshipStandings = dt;
         }
 
-        private void ReadHeadToHead()
+        private void ReadHeadToHead2()
         {
+            //Nytt sätt H2H
             var head2heads = new Head2Heads();
             head2heads.Teams = new List<Head2Head>();
             var numberOfRaces = 0;
@@ -678,30 +679,29 @@ namespace F1
             }
             if (seasonResults.Count > 0)
             {
-                var oneRaceResult = seasonResults[0];
-                foreach (var driver in oneRaceResult)
-                {
-                    var team = driver[2];
-                    var existingTeam = head2heads.Teams.FirstOrDefault(x => x.Team == team);
-                    if (existingTeam == null)
-                    {
-                        existingTeam = new Head2Head
-                        {
-                            Team = team,
-                            Driver1 = driver[1],
-                            Driver2 = oneRaceResult.FirstOrDefault(x => x[2] == team && x[1] != driver[1])[1]
-                        };
-                        head2heads.Teams.Add(existingTeam);
-                    }
-                }
-
-
                 foreach (var seasonResult in seasonResults)
                 {
+                    foreach (var driver in seasonResult)
+                    {
+                        var team = driver[2];
+                        var d1 = driver[1];
+                        var d2 = seasonResult.FirstOrDefault(x => x[2] == team && x[1] != driver[1])[1];
+                        var existingTeam = head2heads.Teams.FirstOrDefault(x => x.Team == team && (x.Driver1 == d1 && x.Driver2 == d2) || (x.Driver1 == d2 && x.Driver2 == d1));
+                        if (existingTeam == null)
+                        {
+                            existingTeam = new Head2Head
+                            {
+                                Team = team,
+                                Driver1 = d1,
+                                Driver2 = d2,
+                            };
+                            head2heads.Teams.Add(existingTeam);
+                        }
+                    }
                     foreach (var team in head2heads.Teams)
                     {
-                        var d1s = seasonResult.FirstOrDefault(x => x[1] == team.Driver1)?[0];
-                        var d2s = seasonResult.FirstOrDefault(x => x[1] == team.Driver2)?[0];
+                        var d1s = seasonResult.FirstOrDefault(x => x[1] == team.Driver1 && x[2] == team.Team)?[0];
+                        var d2s = seasonResult.FirstOrDefault(x => x[1] == team.Driver2 && x[2] == team.Team)?[0];
                         if (d1s == null || d2s == null)
                             continue;
                         var d1 = Convert.ToInt32(d1s);
@@ -748,8 +748,8 @@ namespace F1
                 {
                     foreach (var team in head2heads.Teams)
                     {
-                        var d1s = seasonResult.FirstOrDefault(x => x[1] == team.Driver1)?[0];
-                        var d2s = seasonResult.FirstOrDefault(x => x[1] == team.Driver2)?[0];
+                        var d1s = seasonResult.FirstOrDefault(x => x[1] == team.Driver1 && x[2] == team.Team)?[0];
+                        var d2s = seasonResult.FirstOrDefault(x => x[1] == team.Driver2 && x[2] == team.Team)?[0];
                         if (d1s == null || d2s == null)
                             continue;
                         var d1 = Convert.ToInt32(d1s);
@@ -803,7 +803,6 @@ namespace F1
                     dtr.Rows.Add(l.ToArray());
                 }
                 RaceH2H = dtr;
-
             }
         }
         private void ReadRaceResult()

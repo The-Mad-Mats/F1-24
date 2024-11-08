@@ -673,7 +673,7 @@ namespace F1
             ReadStandings(false);
             ReadTeamStandings();
             ReadBestLaps();
-            ReadHeadToHead();
+            ReadHeadToHead2();
             Run = true;
             Task.Run(() => UDPReader());
 
@@ -1186,7 +1186,7 @@ namespace F1
             ReadTeamStandings();
             ReadBestLaps();
             ReadRaceResult();
-            ReadHeadToHead();
+            ReadHeadToHead2();
         }
         private void ReloadBestLap()
         {
